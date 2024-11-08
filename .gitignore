@@ -1,0 +1,6 @@
+weights/*
+!weights/.gitkeep
+tokenizer/*
+!tokenizer/.gitkeep
+runs/*
+!runs/.gitkeep
