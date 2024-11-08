@@ -257,60 +257,13 @@ if __name__=='__main__':
     config = TrainingConfig
     trainer = Trainer(config, device)
     
-    # LANG_SRC = "en"
-    # LANG_TGT = "es"
+    LANG_SRC = "en"
+    LANG_TGT = "es"
     
-    # ds_raw = load_dataset('opus_books', f'{LANG_SRC}-{LANG_TGT}', split='train')
-
-    # pre_processor = DatasetPreprocessor(config)
-    # #TODO: This is where I will split data for a decoder-only training run
-    
-    # def get_all_sentences(ds, lang) -> Generator[str, None, None]:
-    #     for item in ds:
-    #         yield item['translation'][lang]
-    
-    # tokenizer_src = get_or_build_tokenizer(
-    #     get_all_sentences(ds_raw, LANG_SRC), 
-    #     Path(config.TOKENIZER_FILE.format(LANG_SRC)))
-    
-    # tokenizer_tgt = get_or_build_tokenizer(
-    #     get_all_sentences(ds_raw, LANG_TGT), 
-    #     Path(config.TOKENIZER_FILE.format(LANG_TGT)))
-    
-    # max_len_src = get_max_seq_length(ds_raw, tokenizer_src, lambda x: x['translation'][LANG_SRC])
-    # max_len_tgt = get_max_seq_length(ds_raw, tokenizer_tgt, lambda x: x['translation'][LANG_TGT])
-    # print(f"Max length of source sentence: {max_len_src}")
-    # print(f"Max length of target sentence: {max_len_tgt}")
-    
-    # def get_dataset(ds):
-    #     return EncoderDecoderDataset(ds, config, tokenizer_src, tokenizer_tgt,
-    #                           lambda x: x['translation'][LANG_SRC],
-    #                           lambda x: x['translation'][LANG_TGT])
-    
-    # train_dataloader, val_dataloader = pre_processor.build_dataloaders(ds_raw, get_dataset)
-    
-    # model_config = ModelConfig
-    
-    # model = Transformer(tokenizer_src.get_vocab_size(), 
-    #                 tokenizer_tgt.get_vocab_size(), 
-    #                 config.SEQ_LEN,  
-    #                 model_config).to(device)
-    
-    # def get_model_input(batch: any) -> tuple[any, any, any, any]:
-    #     decoder_input = batch[EncoderDecoderBatchKeys.DECODER_INPUT].to(device) #(batch, seq_len)
-    #     decoder_mask = batch[EncoderDecoderBatchKeys.DECODER_MASK].to(device) #(batch, 1, seq_len, seq_len)
-    #     encoder_input = batch[EncoderDecoderBatchKeys.ENCODER_INPUT].to(device) #(batch, seq_len)
-    #     encoder_mask = batch[EncoderDecoderBatchKeys.ENCODER_MASK].to(device) # (batch, 1, 1, seq_len)
-    #     return (decoder_input, decoder_mask, encoder_input, encoder_mask)
-    
-    # trainer.train_model(model, train_dataloader, val_dataloader, tokenizer_tgt, get_model_input)
-    
-    with open('transformers/notebooks/input.txt', 'r', encoding='utf-8') as f:
-        text = f.read()
+    ds_raw = load_dataset('opus_books', f'{LANG_SRC}-{LANG_TGT}', split='train')
 
     pre_processor = DatasetPreprocessor(config)
     #TODO: This is where I will split data for a decoder-only training run
-    text_chunks = pre_processor.chunk_corpus(text)
     
     def get_all_sentences(ds, lang) -> Generator[str, None, None]:
         for item in ds:
@@ -351,3 +304,50 @@ if __name__=='__main__':
         return (decoder_input, decoder_mask, encoder_input, encoder_mask)
     
     trainer.train_model(model, train_dataloader, val_dataloader, tokenizer_tgt, get_model_input)
+    
+    # with open('transformers/notebooks/input.txt', 'r', encoding='utf-8') as f:
+    #     text = f.read()
+
+    # pre_processor = DatasetPreprocessor(config)
+    # #TODO: This is where I will split data for a decoder-only training run
+    # text_chunks = pre_processor.chunk_corpus(text)
+    
+    # def get_all_sentences(ds, lang) -> Generator[str, None, None]:
+    #     for item in ds:
+    #         yield item['translation'][lang]
+    
+    # tokenizer_src = get_or_build_tokenizer(
+    #     get_all_sentences(ds_raw, LANG_SRC), 
+    #     Path(config.TOKENIZER_FILE.format(LANG_SRC)))
+    
+    # tokenizer_tgt = get_or_build_tokenizer(
+    #     get_all_sentences(ds_raw, LANG_TGT), 
+    #     Path(config.TOKENIZER_FILE.format(LANG_TGT)))
+    
+    # max_len_src = get_max_seq_length(ds_raw, tokenizer_src, lambda x: x['translation'][LANG_SRC])
+    # max_len_tgt = get_max_seq_length(ds_raw, tokenizer_tgt, lambda x: x['translation'][LANG_TGT])
+    # print(f"Max length of source sentence: {max_len_src}")
+    # print(f"Max length of target sentence: {max_len_tgt}")
+    
+    # def get_dataset(ds):
+    #     return EncoderDecoderDataset(ds, config, tokenizer_src, tokenizer_tgt,
+    #                           lambda x: x['translation'][LANG_SRC],
+    #                           lambda x: x['translation'][LANG_TGT])
+    
+    # train_dataloader, val_dataloader = pre_processor.build_dataloaders(ds_raw, get_dataset)
+    
+    # model_config = ModelConfig
+    
+    # model = Transformer(tokenizer_src.get_vocab_size(), 
+    #                 tokenizer_tgt.get_vocab_size(), 
+    #                 config.SEQ_LEN,  
+    #                 model_config).to(device)
+    
+    # def get_model_input(batch: any) -> tuple[any, any, any, any]:
+    #     decoder_input = batch[EncoderDecoderBatchKeys.DECODER_INPUT].to(device) #(batch, seq_len)
+    #     decoder_mask = batch[EncoderDecoderBatchKeys.DECODER_MASK].to(device) #(batch, 1, seq_len, seq_len)
+    #     encoder_input = batch[EncoderDecoderBatchKeys.ENCODER_INPUT].to(device) #(batch, seq_len)
+    #     encoder_mask = batch[EncoderDecoderBatchKeys.ENCODER_MASK].to(device) # (batch, 1, 1, seq_len)
+    #     return (decoder_input, decoder_mask, encoder_input, encoder_mask)
+    
+    # trainer.train_model(model, train_dataloader, val_dataloader, tokenizer_tgt, get_model_input)
